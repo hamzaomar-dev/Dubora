@@ -1,85 +1,68 @@
 # Dubora
 
-Dubora is a Windows desktop application that transcribes video audio, translates subtitle text into Arabic, verifies SRT integrity, and renders translated subtitles with FFmpeg.
+### AI-Powered Video Translation for Arabic
 
-## AI architecture
+Dubora is a Windows desktop application that transforms videos into Arabic-subtitled versions using AI.
 
-Dubora now uses a **server-side AI gateway**:
+It handles the complete workflow from extracting audio and transcribing speech to translating subtitle content and rendering the final video — while preserving subtitle timing.
 
-```text
-Dubora Desktop -> Dubora AI Gateway -> AI Provider (Groq today)
-```
+---
 
-End users do **not** enter an API key. The provider key exists only as a secret on the gateway server. This also lets the server switch AI providers later without rebuilding the desktop app.
+## Overview
 
-## Desktop Beta features
+Dubora was built to turn a multi-step video translation workflow into one desktop application.
 
-- Python + pywebview desktop shell
-- Offline HTML/CSS/JavaScript interface
-- 10-minute local audio chunking
-- Server-side transcription and translation
-- Python-owned subtitle indices/timestamps; AI receives subtitle IDs + text only
-- Exact SRT integrity validation
-- Automatic retries and block-by-block translation fallback
-- Resume state for interrupted jobs
-- Cancel support with resumable sessions
-- Rotating logs under user AppData
-- Writable data outside `Program Files`
-- FFmpeg/ffprobe discovery
-- PyInstaller resource-path support
+Instead of manually:
 
-## Development setup
+- extracting audio
+- transcribing speech
+- creating subtitle files
+- translating subtitles
+- checking timestamps
+- rendering subtitles into the video
 
-Desktop:
+Dubora coordinates the entire process automatically.
 
-```bat
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-python app.py
-```
+### Workflow
 
-Gateway (separate terminal):
+`Video`
+→ `Audio Extraction`
+→ `Speech Transcription`
+→ `Arabic Translation`
+→ `SRT Validation`
+→ `Final Video`
 
-```bat
-python -m venv .venv-server
-.venv-server\Scripts\activate
-pip install -r server\requirements.txt
-set GROQ_API_KEY=YOUR_NEW_SERVER_KEY
-python -m uvicorn server.app:app --host 127.0.0.1 --port 8787
-```
+---
 
-`gateway_url.txt` points to the gateway. It is set to localhost for development. Before a public EXE build, replace it with your deployed HTTPS gateway URL.
+## Key Features
 
-## Security
+- AI-powered speech transcription
+- Context-aware Arabic subtitle translation
+- Preserves original subtitle timestamps
+- Automatic audio extraction with FFmpeg
+- Automatic subtitle rendering
+- Long-video chunk processing
+- Translation request retries
+- Resume support for interrupted jobs
+- Cancelable processing
+- Real-time translation progress
+- Configurable subtitle font and size
+- Configurable output directory
+- Processing logs for diagnostics
+- Windows desktop interface
+- Server-side AI gateway
 
-- Never place a Groq/OpenAI/Gemini/provider key in desktop source, JS, `gateway_url.txt`, GitHub, or the EXE.
-- Store provider secrets only in the server hosting environment.
-- Any old Groq key that was previously distributed or committed should be revoked/rotated.
-- The included gateway has payload limits and a basic in-memory rate limiter. A larger public launch should use persistent rate limiting, monitoring, and optionally user authentication.
+---
 
-## FFmpeg / ffprobe
+## AI Gateway Architecture
 
-Before a Windows distributable build, place:
+Dubora does not expose AI provider credentials inside the desktop application.
+
+The application communicates with a separate backend gateway:
 
 ```text
-ffmpeg/bin/ffmpeg.exe
-ffmpeg/bin/ffprobe.exe
-```
-
-## Tests
-
-```bat
-pip install -r requirements-dev.txt
-pytest -q
-```
-
-## Windows EXE
-
-After the public gateway is deployed and `gateway_url.txt` contains its HTTPS URL:
-
-```bat
-build_windows.bat
-```
-
-The script creates the EXE build, not a Setup installer.
+Dubora Desktop
+      ↓
+Dubora AI Gateway
+      ↓
+AI Provider
