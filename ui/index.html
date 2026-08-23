@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+
+    <title>Dubora - AI Video Translator</title>
+
+    <link rel="stylesheet" href="./style.css">
+
+    <style>
+        /* Windows title bar controls - top right */
+        .titlebar {
+            display: flex !important;
+            align-items: center !important;
+            direction: ltr !important;
+        }
+
+        .title-spacer {
+            flex: 1 1 auto !important;
+        }
+
+        .window-controls {
+            display: flex !important;
+            align-items: center !important;
+            margin-left: auto !important;
+            padding-left: 0 !important;
+            padding-right: 12px !important;
+            direction: ltr !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app-frame">
+
+    <!-- TITLE BAR -->
+    <div class="titlebar pywebview-drag-region">
+
+        <div class="title-spacer"></div>
+
+        <div class="window-controls no-drag" dir="ltr">
+
+            <button
+                id="minimizeWindowBtn"
+                class="window-btn"
+                aria-label="Minimize"
+                type="button">
+                −
+            </button>
+
+            <button
+                id="maximizeWindowBtn"
+                class="window-btn"
+                aria-label="Maximize"
+                type="button">
+                □
+            </button>
+
+            <button
+                id="closeWindowBtn"
+                class="window-btn close"
+                aria-label="Close"
+                type="button">
+                ×
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand-block">
+
+            <img
+                src="./assets/dubora-logo.png"
+                class="brand-logo"
+                alt="Dubora">
+
+            <div>
+                <div class="brand-name">Dubora</div>
+                <div class="brand-subtitle">
+                    AI Video Translator
+                </div>
+            </div>
+
+        </div>
+
+
+        <nav
+            class="side-nav"
+            aria-label="Main navigation">
+
+            <button
+                class="nav-item active"
+                data-page="translate">
+
+                <span class="nav-icon">⌂</span>
+                <span>Translate</span>
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="projects">
+
+                <span class="nav-icon">▣</span>
+                <span>Projects</span>
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="general">
+
+                <span class="nav-icon">⚙</span>
+                <span>General Settings</span>
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="translation-settings">
+
+                <span class="nav-icon">文</span>
+                <span>Translation Settings</span>
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="audio-settings">
+
+                <span class="nav-icon">≋</span>
+                <span>Audio Settings</span>
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="video-settings">
+
+                <span class="nav-icon">▤</span>
+                <span>Video Settings</span>
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="logs">
+
+                <span class="nav-icon">◷</span>
+                <span>Logs</span>
+
+            </button>
+
+
+            <button
+                class="nav-item"
+                data-page="about">
+
+                <span class="nav-icon">ⓘ</span>
+                <span>About</span>
+
+            </button>
+
+        </nav>
+
+
+        <div class="side-footer">
+
+            <button
+                id="quickSettingsBtn"
+                class="quick-settings no-drag"
+                type="button">
+
+                <span>Quick Settings</span>
+                <span>⚙</span>
+
+            </button>
+
+            <div class="version">
+               Dubora v1.0.0
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="content-shell">
+
+
+        <!-- TRANSLATE PAGE -->
+        <section
+            class="page active"
+            id="page-translate">
+
+            <header class="page-hero">
+
+                <h1>
+                    Welcome to
+                    <span>Dubora</span>
+                </h1>
+
+                <p>
+                    Translate videos into Arabic with AI while preserving subtitle timing
+                </p>
+
+            </header>
+
+
+            <!-- UPLOAD -->
+            <section
+                class="upload-zone"
+                id="dropZone">
+
+                <div class="upload-icon">
+                    ☁
+                </div>
+
+                <h2>
+                    Drag & drop your video here
+                </h2>
+
+                <p>
+                    or choose a video from your device
+                </p>
+
+                <button
+                    id="selectVideoBtn"
+                    class="outline-primary"
+                    type="button">
+
+                    <span>▢</span>
+                    Choose Video
+
+                </button>
+
+                <div class="formats">
+                    MP4, MOV, MKV, AVI
+                    <span>•</span>
+                    up to 10 GB
+                </div>
+
+                <input
+                    id="videoPath"
+                    type="hidden">
+
+                <div
+                    id="selectedFile"
+                    class="selected-file hidden">
+                </div>
+
+            </section>
+
+
+            <!-- RESUME -->
+            <div
+                id="resumeBox"
+                class="resume-box hidden">
+
+                <div>
+
+                    <strong>
+                        Incomplete session
+                    </strong>
+
+                    <p>
+                        Resume from the last saved processing stage.
+                    </p>
+
+                </div>
+
+                <button
+                    id="discardSessionBtn"
+                    class="danger-outline"
+                    type="button">
+
+                    Start Over
+
+                </button>
+
+            </div>
+
+
+            <!-- SERVICES -->
+            <section class="service-grid">
+
+                <article class="service-card magenta">
+
+                    <div class="service-icon">
+                        ≋
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            ffprobe
+                        </h3>
+
+                        <b id="ffprobeHealth">
+                            Checking...
+                        </b>
+
+                        <p>
+                            Ready to analyze video metadata
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="service-card cyan">
+
+                    <div class="service-icon">
+                        ▤
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            FFmpeg
+                        </h3>
+
+                        <b id="ffmpegHealth">
+                            Checking...
+                        </b>
+
+                        <p>
+                            Ready for video processing
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="service-card teal">
+
+                    <div class="service-icon">
+                        ✣
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            AI Service
+                        </h3>
+
+                        <b id="aiHealth">
+                            Checking...
+                        </b>
+
+                        <p>
+                            Ready for AI translation
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+
+            <!-- ACTION BUTTONS -->
+            <div class="main-actions">
+
+                <button
+                    id="startBtn"
+                    class="start-btn"
+                    disabled>
+
+                    Start Translation
+
+                    <span>
+                        ✦
+                    </span>
+
+                </button>
+
+
+                <button
+                    id="cancelBtn"
+                    class="cancel-btn hidden">
+
+                    Cancel
+
+                </button>
+
+            </div>
+
+
+            <!-- WORKFLOW -->
+            <section
+                id="workflow"
+                class="workflow-card">
+
+                <div class="workflow-title">
+
+                    <span>
+                        Translation Progress
+                    </span>
+
+                    <span class="pulse-icon">
+                        ⌁
+                    </span>
+
+                </div>
+
+
+                <div class="workflow-steps">
+
+
+                    <div
+                        class="flow-step"
+                        data-step="extract">
+
+                        <span class="flow-circle">
+                            1
+                        </span>
+
+                        <strong>
+                            Audio Extraction
+                        </strong>
+
+                        <small>
+                            Waiting
+                        </small>
+
+                    </div>
+
+
+                    <div class="flow-line"></div>
+
+
+                    <div
+                        class="flow-step"
+                        data-step="transcribe">
+
+                        <span class="flow-circle">
+                            2
+                        </span>
+
+                        <strong>
+                            Transcription
+                        </strong>
+
+                        <small>
+                            Convert speech to text
+                        </small>
+
+                    </div>
+
+
+                    <div class="flow-line"></div>
+
+
+                    <div
+                        class="flow-step"
+                        data-step="translate">
+
+                        <span class="flow-circle">
+                            3
+                        </span>
+
+                        <strong>
+                            Translate to Arabic
+                        </strong>
+
+                        <small>
+                            Translate text into Arabic
+                        </small>
+
+                    </div>
+
+
+                    <div class="flow-line"></div>
+
+
+                    <div
+                        class="flow-step"
+                        data-step="render">
+
+                        <span class="flow-circle">
+                            4
+                        </span>
+
+                        <strong>
+                            Final Video
+                        </strong>
+
+                        <small>
+                            Burn subtitles into video
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="progress-row">
+
+                    <span id="progressPercent">
+                        0%
+                    </span>
+
+                    <span id="progressStatus">
+                        Ready
+                    </span>
+
+                </div>
+
+
+                <div class="progress-track">
+
+                    <div
+                        id="progressBar"
+                        class="progress-bar">
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="progressText"
+                    class="progress-text">
+
+                    Processing has not started yet
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- PROJECTS -->
+        <section
+            class="page"
+            id="page-projects">
+
+            <div class="section-head">
+
+                <div>
+
+                    <span class="kicker">
+                        PROJECTS
+                    </span>
+
+                    <h2>
+                        Projects
+                    </h2>
+
+                    <p>
+                        Recently processed videos from Dubora.
+                    </p>
+
+                </div>
+
+                <button
+                    id="refreshProjectsBtn"
+                    class="outline-primary"
+                    type="button">
+
+                    Refresh
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="projectsList"
+                class="projects-list">
+            </div>
+
+        </section>
+
+
+        <!-- GENERAL SETTINGS -->
+        <section
+            class="page"
+            id="page-general">
+
+            <div class="section-head">
+
+                <div>
+
+                    <span class="kicker">
+                        GENERAL
+                    </span>
+
+                    <h2>
+                        General Settings
+                    </h2>
+
+                    <p>
+                        Storage, service, and application behavior settings.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-grid">
+
+
+                <article class="settings-card wide">
+
+                    <h3>
+                        Output Folder
+                    </h3>
+
+                    <p>
+                        Where Dubora saves videos and SRT files.
+                    </p>
+
+                    <div class="field-row">
+
+                        <input
+                            id="outputDirInput"
+                            class="cyber-input"
+                            readonly>
+
+                        <button
+                            id="chooseOutputBtn"
+                            class="outline-primary"
+                            type="button">
+
+                            Choose
+
+                        </button>
+
+                        <button
+                            id="openOutputBtn"
+                            class="soft-btn"
+                            type="button">
+
+                            Open Folder
+
+                        </button>
+
+                    </div>
+
+                </article>
+
+
+                <article class="settings-card">
+
+                    <h3>
+                        Dubora AI Service
+                    </h3>
+
+                    <p id="gatewayHost">
+                        —
+                    </p>
+
+                    <button
+                        id="testServiceBtn"
+                        class="outline-primary full"
+                        type="button">
+
+                        Test Connection
+
+                    </button>
+
+                </article>
+
+
+                <article class="settings-card">
+
+                    <h3>
+                        After Translation
+                    </h3>
+
+                    <label class="switch-row">
+
+                        <span>
+                            Open Output Folder automatically
+                        </span>
+
+                        <input
+                            id="autoOpenOutput"
+                            type="checkbox">
+
+                        <i></i>
+
+                    </label>
+
+                </article>
+
+            </div>
+
+
+            <div
+                id="settingsMessage"
+                class="message">
+            </div>
+
+
+            <button
+                class="save-btn"
+                data-save-settings
+                type="button">
+
+                Save Settings
+
+            </button>
+
+        </section>
+
+
+        <!-- TRANSLATION SETTINGS -->
+        <section
+            class="page"
+            id="page-translation-settings">
+
+            <div class="section-head">
+
+                <div>
+
+                    <span class="kicker">
+                        TRANSLATION
+                    </span>
+
+                    <h2>
+                        Translation Settings
+                    </h2>
+
+                    <p>
+                        Safe options that never modify original SRT timing.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-grid">
+
+
+                <article class="settings-card">
+
+                    <label>
+                        Source Language
+                    </label>
+
+                    <select
+                        class="cyber-input"
+                        disabled>
+
+                        <option>
+                            Auto Detect
+                        </option>
+
+                    </select>
+
+                    <small>
+                        Detected automatically by the transcription service.
+                    </small>
+
+                </article>
+
+
+                <article class="settings-card">
+
+                    <label>
+                        Target Language
+                    </label>
+
+                    <select
+                        class="cyber-input"
+                        disabled>
+
+                        <option>
+                            Arabic
+                        </option>
+
+                    </select>
+
+                    <small>
+                        Dubora Beta currently translates to Arabic.
+                    </small>
+
+                </article>
+
+
+                <article class="settings-card">
+
+                    <label for="translationChunkSize">
+                        Translation Chunk Size
+                    </label>
+
+                    <input
+                        id="translationChunkSize"
+                        class="cyber-input"
+                        type="number"
+                        min="5"
+                        max="30"
+                        step="1">
+
+                    <small>
+                        Subtitle items sent per request. Default: 15.
+                    </small>
+
+                </article>
+
+
+                <article class="settings-card">
+
+                    <label>
+                        Translation Style
+                    </label>
+
+                    <div class="readout">
+                        Contextual / Cinematic
+                    </div>
+
+                    <small>
+                        Preserves meaning and tone while timestamps remain locked locally.
+                    </small>
+
+                </article>
+
+            </div>
+
+
+            <button
+                class="save-btn"
+                data-save-settings
+                type="button">
+
+                Save Settings
+
+            </button>
+
+        </section>
+
+
+        <!-- AUDIO SETTINGS -->
+        <section
+            class="page"
+            id="page-audio-settings">
+
+            <div class="section-head">
+
+                <div>
+
+                    <span class="kicker">
+                        AUDIO
+                    </span>
+
+                    <h2>
+                        Audio Settings
+                    </h2>
+
+                    <p>
+                        Audio chunking settings used before transcription.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-grid">
+
+
+                <article class="settings-card">
+
+                    <label for="transcriptionChunkMinutes">
+                        Transcription Chunk Length
+                    </label>
+
+                    <input
+                        id="transcriptionChunkMinutes"
+                        class="cyber-input"
+                        type="number"
+                        min="2"
+                        max="15"
+                        step="1">
+
+                    <small>
+                        Minutes per chunk. Default: 10.
+                    </small>
+
+                </article>
+
+
+                <article class="settings-card">
+
+                    <label>
+                        Audio Channel
+                    </label>
+
+                    <div class="readout">
+                        Mono
+                    </div>
+
+                    <small>
+                        Fixed for stable transcription.
+                    </small>
+
+                </article>
+
+
+                <article class="settings-card">
+
+                    <label>
+                        Sample Rate
+                    </label>
+
+                    <div class="readout">
+                        16 kHz
+                    </div>
+
+                    <small>
+                        Compatible with the current transcription engine.
+                    </small>
+
+                </article>
+
+            </div>
+
+
+            <button
+                class="save-btn"
+                data-save-settings
+                type="button">
+
+                Save Settings
+
+            </button>
+
+        </section>
+
+
+        <!-- VIDEO SETTINGS -->
+        <section
+            class="page"
+            id="page-video-settings">
+
+            <div class="section-head">
+
+                <div>
+
+                    <span class="kicker">
+                        VIDEO
+                    </span>
+
+                    <h2>
+                        Video Settings
+                    </h2>
+
+                    <p>
+                        Subtitle rendering options for the final video.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-grid">
+
+
+                <article class="settings-card">
+
+                    <label for="subtitleFont">
+                        Subtitle Font
+                    </label>
+
+                    <select
+                        id="subtitleFont"
+                        class="cyber-input">
+
+                        <option>
+                            Arial
+                        </option>
+
+                        <option>
+                            Segoe UI
+                        </option>
+
+                        <option>
+                            Tahoma
+                        </option>
+
+                    </select>
+
+                </article>
+
+
+                <article class="settings-card">
+
+                    <label for="subtitleFontSize">
+                        Subtitle Font Size
+                    </label>
+
+                    <input
+                        id="subtitleFontSize"
+                        class="cyber-input"
+                        type="number"
+                        min="18"
+                        max="40"
+                        step="1">
+
+                </article>
+
+
+                <article class="settings-card">
+
+                    <label>
+                        Output Format
+                    </label>
+
+                    <div class="readout">
+                        MP4
+                    </div>
+
+                    <small>
+                        Original audio is copied without re-encoding when possible.
+                    </small>
+
+                </article>
+
+            </div>
+
+
+            <button
+                class="save-btn"
+                data-save-settings
+                type="button">
+
+                Save Settings
+
+            </button>
+
+        </section>
+
+
+        <!-- LOGS -->
+        <section
+            class="page"
+            id="page-logs">
+
+            <div class="section-head">
+
+                <div>
+
+                    <span class="kicker">
+                        LOGS
+                    </span>
+
+                    <h2>
+                        Logs
+                    </h2>
+
+                    <p>
+                        Recent Dubora events for diagnostics.
+                    </p>
+
+                </div>
+
+
+                <div class="head-actions">
+
+                    <button
+                        id="refreshLogsBtn"
+                        class="outline-primary"
+                        type="button">
+
+                        Refresh
+
+                    </button>
+
+
+                    <button
+                        id="clearLogsBtn"
+                        class="danger-outline"
+                        type="button">
+
+                        Clear Logs
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <pre
+                id="logsBox"
+                class="logs-box">Loading logs...</pre>
+
+        </section>
+
+
+        <!-- ABOUT -->
+        <section
+            class="page"
+            id="page-about">
+
+            <div class="section-head">
+
+                <div>
+
+                    <span class="kicker">
+                        ABOUT
+                    </span>
+
+                    <h2>
+                        About Dubora
+                    </h2>
+
+                    <p>
+                        Desktop AI video translator that preserves subtitle timing.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="about-card">
+
+                <img
+                    src="./assets/dubora-logo.png"
+                    alt="Dubora">
+
+                <div>
+
+                    <h2>
+                        Dubora
+                    </h2>
+
+                    <p>
+                        AI Video Translator
+                    </p>
+
+                    <div class="about-badges">
+
+                        <span>Python</span>
+                        <span>PyWebView</span>
+                        <span>FFmpeg</span>
+                        <span>FastAPI Gateway</span>
+                        <span>Groq AI</span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="aboutHealth"
+                class="info-grid">
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+<!-- TOAST -->
+<div
+    id="toast"
+    class="toast hidden">
+</div>
+
+
+<script src="./app.js"></script>
+
+</body>
+</html>

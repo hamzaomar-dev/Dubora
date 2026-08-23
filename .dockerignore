@@ -1,0 +1,17 @@
+.git
+.venv
+.venv-server
+__pycache__
+.pytest_cache
+build
+dist
+ffmpeg
+ui
+tests
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.wav
+*.mp3
+.env

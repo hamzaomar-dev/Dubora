@@ -1,0 +1,4 @@
+-r requirements.txt
+-r server/requirements.txt
+pytest
+pyinstaller

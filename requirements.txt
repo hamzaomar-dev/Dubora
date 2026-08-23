@@ -1,0 +1,3 @@
+pywebview
+httpx
+imageio-ffmpeg
