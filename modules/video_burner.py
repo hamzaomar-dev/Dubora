@@ -18,6 +18,13 @@ logger = setup_logging()
 _external_process_lock = Lock()
 
 
+def _external_process_creationflags() -> int:
+    """Hide FFmpeg/ffprobe console windows on Windows."""
+    if os.name != "nt":
+        return 0
+    return int(getattr(subprocess, "CREATE_NO_WINDOW", 0))
+
+
 @contextmanager
 def _clean_windows_dll_environment():
     """
@@ -94,6 +101,7 @@ def _probe_duration_seconds(video_path: str) -> float:
                 timeout=30,
                 check=False,
                 env=clean_env,
+                creationflags=_external_process_creationflags(),
             )
 
         if completed.returncode != 0:
@@ -190,6 +198,7 @@ def burn_subtitles(
                 errors="replace",
                 bufsize=1,
                 env=clean_env,
+                creationflags=_external_process_creationflags(),
             )
 
         assert process.stdout is not None
