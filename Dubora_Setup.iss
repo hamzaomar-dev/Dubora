@@ -1,5 +1,5 @@
 #define MyAppName "Dubora"
-#define MyAppVersion "0.1.0-beta"
+#define MyAppVersion "1.0.0"
 #define MyAppPublisher "Hamza Omar"
 #define MyAppExeName "Dubora.exe"
 
